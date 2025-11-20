@@ -74,7 +74,39 @@ dashboard-frontend/
 - **リポジトリ**: [Dashbord-CSharp](https://github.com/hiro1966/Dashbord-CSharp)
 - **エンドポイント**: `http://localhost:5260/graphql`
 
-バックエンドのセットアップ方法は、バックエンドリポジトリのREADMEを参照してください。
+### バックエンドのセットアップ
+
+1. バックエンドリポジトリをクローン
+2. `DashboardServer/start-server.bat` を実行
+3. GraphQL Playground: `http://localhost:5260/graphql` で動作確認
+
+### GraphQLクエリ例
+
+```graphql
+# 入院患者データ取得
+query {
+  inpatientData {
+    title
+    labels
+    values
+  }
+}
+
+# 外来患者データ取得
+query {
+  outpatientData(department: "全科", period: "月毎") {
+    title
+    labels
+    datasets {
+      label
+      data
+      borderColor
+      backgroundColor
+      fill
+    }
+  }
+}
+```
 
 ## 機能
 
