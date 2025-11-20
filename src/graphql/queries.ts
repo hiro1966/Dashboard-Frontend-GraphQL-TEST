@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from '@apollo/client/core';
 
 // 入院患者データ取得
 export const GET_INPATIENT_DATA = gql`

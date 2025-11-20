@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { GET_INPATIENT_DATA, GET_OUTPATIENT_DATA } from "@/graphql/queries";
 import type { InpatientDataResponse, OutpatientDataResponse } from "@/types/dashboard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
