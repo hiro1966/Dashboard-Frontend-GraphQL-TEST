@@ -5,6 +5,7 @@ import { GET_INPATIENT_DATA, GET_OUTPATIENT_DATA } from "@/graphql/queries";
 import type { InpatientDataResponse, OutpatientDataResponse } from "@/types/dashboard";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { LineChart, Line } from "recharts";
+import Link from "next/link";
 
 export default function Home() {
   // 入院患者データ取得
@@ -57,7 +58,8 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* 入院患者カード */}
-          <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
+          <Link href="/inpatient">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">🛏️ 入院患者数</h2>
               <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
@@ -94,9 +96,11 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </Link>
 
           {/* 外来患者カード */}
-          <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
+          <Link href="/outpatient">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-gray-800">🚪 外来患者数</h2>
               <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
@@ -133,6 +137,7 @@ export default function Home() {
               </div>
             </div>
           </div>
+          </Link>
         </div>
 
         <footer className="mt-12 text-center">
