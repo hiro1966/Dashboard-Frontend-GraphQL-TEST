@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_OUTPATIENT_DATA } from "@/graphql/queries";
 import type { OutpatientDataResponse } from "@/types/dashboard";
@@ -19,10 +19,15 @@ import {
 import Link from "next/link";
 
 export default function OutpatientPage() {
+  const [lastUpdate, setLastUpdate] = useState<string>("");
   const [department, setDepartment] = useState("全科");
   const [period, setPeriod] = useState("日毎");
   const [startDate, setStartDate] = useState("2025-01-01");
   const [endDate, setEndDate] = useState("2025-10-31");
+
+  useEffect(() => {
+    setLastUpdate(new Date().toLocaleString('ja-JP'));
+  }, []);
 
   const { data, loading, error, refetch } = useQuery<OutpatientDataResponse>(
     GET_OUTPATIENT_DATA,
@@ -308,7 +313,7 @@ export default function OutpatientPage() {
         {/* フッター */}
         <div className="mt-8 text-center">
           <p className="text-white/80 text-sm">
-            最終更新: {new Date().toLocaleString('ja-JP')}
+            最終更新: {lastUpdate || "読み込み中..."}
           </p>
         </div>
       </main>

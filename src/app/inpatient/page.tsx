@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_INPATIENT_DATA } from "@/graphql/queries";
 import type { InpatientDataResponse } from "@/types/dashboard";
@@ -7,6 +8,11 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import Link from "next/link";
 
 export default function InpatientPage() {
+  const [lastUpdate, setLastUpdate] = useState<string>("");
+
+  useEffect(() => {
+    setLastUpdate(new Date().toLocaleString('ja-JP'));
+  }, []);
   const { data, loading, error, refetch } = useQuery<InpatientDataResponse>(GET_INPATIENT_DATA);
 
   // グラフ用データ整形
@@ -178,7 +184,7 @@ export default function InpatientPage() {
         {/* フッター */}
         <div className="mt-8 text-center">
           <p className="text-white/80 text-sm">
-            最終更新: {new Date().toLocaleString('ja-JP')}
+            最終更新: {lastUpdate || "読み込み中..."}
           </p>
         </div>
       </main>
