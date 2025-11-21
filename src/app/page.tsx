@@ -7,6 +7,9 @@ import type { InpatientDataResponse, OutpatientDataResponse } from "@/types/dash
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { LineChart, Line } from "recharts";
 import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Hospital, Activity } from "lucide-react";
 
 export default function Home() {
   const [lastUpdate, setLastUpdate] = useState<string>("");
@@ -14,13 +17,14 @@ export default function Home() {
   useEffect(() => {
     setLastUpdate(new Date().toLocaleTimeString('ja-JP'));
   }, []);
+
   // 入院患者データ取得
-  const { data: inpatientData, loading: inpatientLoading } = useQuery<InpatientDataResponse>(
+  const { data: inpatientData, loading: inpatientLoading, refetch: refetchInpatient } = useQuery<InpatientDataResponse>(
     GET_INPATIENT_DATA
   );
 
   // 外来患者データ取得（月毎、全科）
-  const { data: outpatientData, loading: outpatientLoading } = useQuery<OutpatientDataResponse>(
+  const { data: outpatientData, loading: outpatientLoading, refetch: refetchOutpatient } = useQuery<OutpatientDataResponse>(
     GET_OUTPATIENT_DATA,
     {
       variables: {
@@ -50,27 +54,39 @@ export default function Home() {
   
   const outpatientLatest = outpatientData?.outpatientData.datasets[0]?.data.slice(-1)[0] || 0;
 
+  const handleRefresh = () => {
+    refetchInpatient();
+    refetchOutpatient();
+    setLastUpdate(new Date().toLocaleTimeString('ja-JP'));
+  };
+
   return (
-    <main className="min-h-screen p-8 bg-gradient-to-br from-purple-500 to-pink-500">
+    <main className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-500 to-pink-500">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-white mb-4">
-            🏥 医療ダッシュボード
+        <header className="text-center mb-8 md:mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+            <Hospital className="h-10 w-10 md:h-12 md:w-12" />
+            医療ダッシュボード
           </h1>
-          <p className="text-xl text-white/90">
+          <p className="text-lg md:text-xl text-white/90">
             入院・外来患者数の統合ビュー
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* 入院患者カード */}
           <Link href="/inpatient">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">🛏️ 入院患者数</h2>
-              <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
-            </div>
-            
+            <Card className="hover:scale-105 transition-transform cursor-pointer border-2 hover:border-purple-400 hover:shadow-2xl">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    🛏️ 入院患者数
+                  </span>
+                  <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
+                </CardTitle>
+                <CardDescription>病棟別の入院患者数</CardDescription>
+              </CardHeader>
+              <CardContent>
             {inpatientLoading ? (
               <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
                 <p className="text-gray-500">読み込み中...</p>
@@ -101,17 +117,23 @@ export default function Home() {
                 <p className="text-3xl font-bold text-purple-600">{inpatientWards}</p>
               </div>
             </div>
-          </div>
+              </CardContent>
+            </Card>
           </Link>
 
           {/* 外来患者カード */}
           <Link href="/outpatient">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 hover:scale-105 transition-transform cursor-pointer">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">🚪 外来患者数</h2>
-              <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
-            </div>
-            
+            <Card className="hover:scale-105 transition-transform cursor-pointer border-2 hover:border-pink-400 hover:shadow-2xl">
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    🚪 外来患者数
+                  </span>
+                  <span className="text-sm text-purple-600 font-semibold">詳細を見る →</span>
+                </CardTitle>
+                <CardDescription>月別の外来患者数推移</CardDescription>
+              </CardHeader>
+              <CardContent>
             {outpatientLoading ? (
               <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
                 <p className="text-gray-500">読み込み中...</p>
@@ -142,22 +164,26 @@ export default function Home() {
                 <p className="text-3xl font-bold text-purple-600">3</p>
               </div>
             </div>
-          </div>
+              </CardContent>
+            </Card>
           </Link>
         </div>
 
-        <footer className="mt-12 text-center">
-          <div className="bg-white/90 rounded-lg p-6 inline-block">
-            <p className="text-gray-700">
-              最終更新: <span className="font-semibold">{lastUpdate || "読み込み中..."}</span>
-            </p>
-            <button 
-              className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              onClick={() => window.location.reload()}
-            >
-              🔄 更新
-            </button>
-          </div>
+        <footer className="mt-8 md:mt-12 text-center">
+          <Card className="inline-block bg-white/95">
+            <CardContent className="p-6">
+              <p className="text-gray-700 mb-4">
+                最終更新: <span className="font-semibold">{lastUpdate || "読み込み中..."}</span>
+              </p>
+              <Button 
+                onClick={handleRefresh}
+                className="gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                更新
+              </Button>
+            </CardContent>
+          </Card>
         </footer>
       </div>
     </main>
