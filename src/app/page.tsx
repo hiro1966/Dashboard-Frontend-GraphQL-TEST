@@ -61,7 +61,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-purple-500 to-pink-500">
+    <main className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600">
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-8 md:mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
