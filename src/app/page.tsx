@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_INPATIENT_DATA, GET_OUTPATIENT_DATA } from "@/graphql/queries";
 import type { InpatientDataResponse, OutpatientDataResponse } from "@/types/dashboard";
@@ -8,6 +9,11 @@ import { LineChart, Line } from "recharts";
 import Link from "next/link";
 
 export default function Home() {
+  const [lastUpdate, setLastUpdate] = useState<string>("");
+
+  useEffect(() => {
+    setLastUpdate(new Date().toLocaleTimeString('ja-JP'));
+  }, []);
   // 入院患者データ取得
   const { data: inpatientData, loading: inpatientLoading } = useQuery<InpatientDataResponse>(
     GET_INPATIENT_DATA
@@ -143,7 +149,7 @@ export default function Home() {
         <footer className="mt-12 text-center">
           <div className="bg-white/90 rounded-lg p-6 inline-block">
             <p className="text-gray-700">
-              最終更新: <span className="font-semibold">{new Date().toLocaleTimeString('ja-JP')}</span>
+              最終更新: <span className="font-semibold">{lastUpdate || "読み込み中..."}</span>
             </p>
             <button 
               className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
