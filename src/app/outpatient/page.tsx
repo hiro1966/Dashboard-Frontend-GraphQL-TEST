@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
-import { GET_OUTPATIENT_DATA } from "@/graphql/queries";
+import { GET_OUTPATIENT_DATA, GET_DEPARTMENTS } from "@/graphql/queries";
 import type { OutpatientDataResponse } from "@/types/dashboard";
 import { 
   LineChart, 
@@ -22,6 +22,18 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, RefreshCw, Users, TrendingUp, TrendingDown, Activity, Calendar } from "lucide-react";
 
+interface Department {
+  departmentId: string;
+  departmentName: string;
+  seq: number;
+  isDisplay: boolean;
+  color: string | null;
+}
+
+interface DepartmentsResponse {
+  departments: Department[];
+}
+
 export default function OutpatientPage() {
   const [lastUpdate, setLastUpdate] = useState<string>("");
   const [department, setDepartment] = useState("全科");
@@ -32,6 +44,9 @@ export default function OutpatientPage() {
   useEffect(() => {
     setLastUpdate(new Date().toLocaleString('ja-JP'));
   }, []);
+
+  // 診療科マスタを取得
+  const { data: departmentsData } = useQuery<DepartmentsResponse>(GET_DEPARTMENTS);
 
   const { data, loading, error, refetch } = useQuery<OutpatientDataResponse>(
     GET_OUTPATIENT_DATA,
@@ -65,13 +80,15 @@ export default function OutpatientPage() {
   const stats = calculateStats();
   const isStacked = department === "全科(色分)";
 
-  // 色のマッピング
-  const colorMap: { [key: string]: string } = {
-    "内科": "#ef4444",
-    "小児科": "#3b82f6",
-    "整形外科": "#f59e0b",
-    "全科": "#8b5cf6"
-  };
+  // 診療科マスタから色のマッピングを作成
+  const colorMap: { [key: string]: string } = {};
+  departmentsData?.departments.forEach(dept => {
+    if (dept.color) {
+      colorMap[dept.departmentName] = dept.color;
+    }
+  });
+  // デフォルト色を追加
+  if (!colorMap["全科"]) colorMap["全科"] = "#8b5cf6";
 
   const handleRefresh = () => {
     refetch();
@@ -136,9 +153,11 @@ export default function OutpatientPage() {
                   <SelectContent>
                     <SelectItem value="全科">全科</SelectItem>
                     <SelectItem value="全科(色分)">全科(色分)</SelectItem>
-                    <SelectItem value="内科">内科</SelectItem>
-                    <SelectItem value="小児科">小児科</SelectItem>
-                    <SelectItem value="整形外科">整形外科</SelectItem>
+                    {departmentsData?.departments.map(dept => (
+                      <SelectItem key={dept.departmentId} value={dept.departmentName}>
+                        {dept.departmentName}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

@@ -1,5 +1,31 @@
 import { gql } from '@apollo/client/core';
 
+// 診療科マスタ取得
+export const GET_DEPARTMENTS = gql`
+  query GetDepartments {
+    departments {
+      departmentId
+      departmentName
+      seq
+      isDisplay
+      color
+    }
+  }
+`;
+
+// 病棟マスタ取得
+export const GET_WARDS = gql`
+  query GetWards {
+    wards {
+      wardId
+      wardName
+      seq
+      isDisplay
+      color
+    }
+  }
+`;
+
 // 入院患者データ取得
 export const GET_INPATIENT_DATA = gql`
   query GetInpatientData {
